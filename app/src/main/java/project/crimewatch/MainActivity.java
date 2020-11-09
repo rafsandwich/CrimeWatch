@@ -7,7 +7,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.opencsv.CSVReader;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
