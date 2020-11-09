@@ -1,10 +1,13 @@
 package project.crimewatch;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.renderscript.ScriptGroup;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.opencsv.CSVReader;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -13,10 +16,14 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+
+
 
 
 
@@ -36,13 +43,24 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        readCrimeData();
+        try {
+            readCrimeData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    private void readCrimeData()
-    {
 
+    private void readCrimeData() throws IOException {
+        InputStreamReader is = new InputStreamReader(getAssets().open("crime.csv"));
+
+        BufferedReader reader = new BufferedReader(is);
+        reader.readLine();
+        String line;
+        while ((line = reader.readLine()) != null)
+        {
+            Log.d("TEST", line);
+        }
     }
-
 }
