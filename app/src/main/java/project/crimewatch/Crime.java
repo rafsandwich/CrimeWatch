@@ -37,6 +37,15 @@ public class Crime
         count++;
     }
 
+    public String displayCrimeData()
+    {
+        return "CrimeUID: " + UID +
+                ", Month: " + month +
+                ", latitude: " + latitude +
+                ", longitude: " + longitude +
+                ", Crime Type: " + crimeType;
+    }
+
     public String getCrimeID() {
         return crimeID;
     }
