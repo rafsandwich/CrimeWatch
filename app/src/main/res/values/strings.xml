@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">CrimeWatch</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_crimes">Crimes</string>
+    <string name="title_map">Map</string>
+    <string name="title_notifications">map</string>
 </resources>
