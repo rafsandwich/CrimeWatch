@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import project.crimewatch.R;
 
+// Home page
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;

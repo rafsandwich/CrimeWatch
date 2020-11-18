@@ -13,13 +13,13 @@
 
     <fragment
         android:id="@+id/navigation_crimes"
-        android:name="project.crimewatch.ui.dashboard.DashboardFragment"
+        android:name="project.crimewatch.ui.crimes.CrimesFragment"
         android:label="@string/title_crimes"
         tools:layout="@layout/fragment_crimes" />
 
     <fragment
         android:id="@+id/navigation_map"
-        android:name="project.crimewatch.ui.notifications.NotificationsFragment"
+        android:name="project.crimewatch.ui.map.MapFragment"
         android:label="@string/title_map"
         tools:layout="@layout/fragment_map" />
 </navigation>
