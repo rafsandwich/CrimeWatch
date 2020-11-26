@@ -29,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int ERROR_DIALOG_REQUEST = 9001;
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,12 +45,11 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        if (checkServices()) {
-            initMap();
-        }
+        // Check app can access map api
+        checkServices();
 
         // List of crime objects
-        ArrayList<Crime> crimes = new ArrayList<Crime>();
+        ArrayList<Crime> crimes = new ArrayList<>();
         try {
             readCrimeData(crimes);
         } catch (IOException e) {
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initMap() {
-        
+
     }
 
 
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
      * Checks the google play services version to ensure maps API compatibility.
      * @return true if okay else false
      */
-    public boolean checkServices() {
+    public void checkServices() {
         Log.d(TAG, "checkServices: checking google play services version...");
 
         int available = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(MainActivity.this);
@@ -73,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
         if (available == ConnectionResult.SUCCESS) {
             // Everything is fine and user can make API requests
             Log.d(TAG, "checkServices: Google Play Services is working.");
-            return true;
         } else if (GoogleApiAvailability.getInstance().isUserResolvableError(available)) {
             // An error occurred but can be resolved e.g. outdated version
             Log.d(TAG, "checkServices: An error occurred but can be fixed");
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Unable to make map requests", Toast.LENGTH_SHORT).show();
         }
-        return false;
     }
 
     /**
