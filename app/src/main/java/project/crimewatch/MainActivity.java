@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     // This is the error code if user has the incorrect google play services installed for
     // maps API to function.
     private static final int ERROR_DIALOG_REQUEST = 9001;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,8 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check app can access map api
         checkServices();
-        // List of crime objects
-        ArrayList<Crime> crimes = new ArrayList<Crime>();
+        
         try {
             readCrimeData(crimes);
         } catch (IOException e) {
