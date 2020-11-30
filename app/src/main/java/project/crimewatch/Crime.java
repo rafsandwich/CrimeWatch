@@ -7,7 +7,7 @@ public class Crime
     private int UID;
 
     private String crimeID;
-    private String month;
+    private String date;
     private String reportedBy;
     private String fallsWithin;
     private String latitude;
@@ -18,12 +18,12 @@ public class Crime
     private String crimeType;
 
 
-    public Crime(String crimeID, String month, String reportedBy, String fallsWithin,
+    public Crime(String crimeID, String date, String reportedBy, String fallsWithin,
                  String latitude, String longitude, String location, String LSOACode,
                  String LSOAName, String crimeType)
     {
         this.crimeID = crimeID;
-        this.month = month;
+        this.date = date;
         this.reportedBy = reportedBy;
         this.fallsWithin = fallsWithin;
         this.latitude = latitude;
@@ -40,7 +40,7 @@ public class Crime
     public String displayCrimeData()
     {
         return "CrimeUID: " + UID +
-                ", Month: " + month +
+                ", Month: " + date +
                 ", latitude: " + latitude +
                 ", longitude: " + longitude +
                 ", Crime Type: " + crimeType;
@@ -54,12 +54,12 @@ public class Crime
         this.crimeID = crimeID;
     }
 
-    public String getMonth() {
-        return month;
+    public String getDate() {
+        return date;
     }
 
-    public void setMonth(String month) {
-        this.month = month;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getReportedBy() {

@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check app can access map api
         checkServices();
-        
+
         try {
             readCrimeData(crimes);
         } catch (IOException e) {
