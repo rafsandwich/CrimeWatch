@@ -44,7 +44,7 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         tv = (TextView)root.findViewById(R.id.tvDisplayCrimes);
         ddCrimeTypes = (Spinner)root.findViewById(R.id.ddCrimeTypes);
         ddDates = (Spinner)root.findViewById(R.id.ddDates);
-        
+
         //Set default positions for dd lists
         ddCrimeTypes.setSelection(0);
         ddDates.setSelection(0);
