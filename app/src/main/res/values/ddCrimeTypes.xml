@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name = "ddCrimeTypes">
+        <item>All Crimes</item>
+        <item>Other theft</item>
+        <item>Public order</item>
+        <item>Theft from the person</item>
+        <item>Anti-social behaviour</item>
+        <item>Violence and sexual offences</item>
+        <item>Burglary</item>
+        <item>Drugs</item>
+        <item>Possession of weapons</item>
+        <item>Vehicle crime</item>
+        <item>Criminal damage and arson</item>
+        <item>Shoplifting</item>
+        <item>Bicycle theft</item>
+        <item>Robbery</item>
+    </string-array>
+</resources>

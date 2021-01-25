@@ -4,7 +4,9 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +24,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.SortedSet;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -47,7 +52,31 @@ public class MainActivity extends AppCompatActivity {
 
         // Check app can access map api
         checkServices();
-        
+
+        //trying to use a set of crime types to fill a spinner
+//        Spinner crimesSpinner = (Spinner) findViewById(R.id.ddCrimeTypes);
+//
+//        String[] crimeTypes = new String[]{};
+//        final List<String> crimeTypeList = new ArrayList<>(Arrays.asList(crimeTypes));
+//        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
+//                this,R.layout.fragment_crimes,crimeTypeList);
+//        spinnerArrayAdapter.setDropDownViewResource(R.layout.fragment_crimes);
+//        // N2S: below is a problem
+//        crimesSpinner.setAdapter(spinnerArrayAdapter);
+//
+//        SortedSet<String> crimeTypesSet = null;
+//        try {
+//            createCrimeList(crimeTypesSet);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        for (String each: crimeTypesSet) {
+//            crimeTypeList.add(each);
+//            spinnerArrayAdapter.notifyDataSetChanged();
+//        }
+
+
         try {
             readCrimeData(crimes);
         } catch (IOException e) {
@@ -111,4 +140,19 @@ public class MainActivity extends AppCompatActivity {
         }
         reader.close();
     }
+
+//    private void createCrimeList(SortedSet<String> crimeTypes) throws IOException {
+//
+//        InputStreamReader is = new InputStreamReader(getAssets().open("crime.csv"));
+//        BufferedReader reader = new BufferedReader(is);
+//        reader.readLine();
+//        String line;
+//        String[] values;
+//
+//        while ((line = reader.readLine()) != null) {
+//            values = line.split(",");
+//            crimeTypes.add(values[9]);//
+//
+//        }
+//    }
 }
