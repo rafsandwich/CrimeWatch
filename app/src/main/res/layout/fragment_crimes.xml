@@ -21,9 +21,9 @@
 
     <TextView
         android:id="@+id/tvDisplayCrimes"
-        android:layout_width="376dp"
-        android:layout_height="616dp"
-        android:layout_marginTop="96dp"
+        android:layout_width="378dp"
+        android:layout_height="531dp"
+        android:layout_marginTop="184dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:isScrollContainer="true"
@@ -55,6 +55,18 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="56dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnDisplayCrimesViaAPI"
+        android:layout_width="98dp"
+        android:layout_height="61dp"
+        android:layout_marginTop="104dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:text="Display Crimes via API"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
