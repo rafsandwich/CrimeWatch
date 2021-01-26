@@ -1,9 +1,16 @@
 package project.crimewatch.ui.crimes;
+
 import android.os.AsyncTask;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Scanner;
+
+import project.crimewatch.Crime;
 
 
 /**
@@ -18,6 +25,7 @@ public class GetAPIData extends AsyncTask<Void, Void, String>
     @Override
     protected String doInBackground(Void... voids) {
         String data = "";
+        ArrayList<Crime> crimesAPI = new ArrayList<Crime>();
 
         try {
             // Set URL and make connection
@@ -34,23 +42,37 @@ public class GetAPIData extends AsyncTask<Void, Void, String>
                 throw new RuntimeException("HttpResponseCode: " + responseCode);
             } else {
 
-                // Do something with API response
-
                 //At the moment the response is put into a string and returned
-
                 Scanner scanner = new Scanner(url.openStream());
-
                 while (scanner.hasNext()) {
                     data += scanner.nextLine();
                 }
-
                 scanner.close();
+
+                /***
+                 * Parse response and add add crimes to crime list
+                 * Will return crimes list in future and that will replace the need for csv's
+                 */
+                /*
+                JSONArray jsonArray = new JSONArray(data);
+                for(int count = 0; count < jsonArray.length(); count++)
+                {
+                    JSONObject jsonObject = jsonArray.getJSONObject(count);
+                    JSONObject location = jsonObject.getJSONObject("location");
+                    Crime crime = new Crime();
+                    crime.setCrimeID(jsonObject.getString("id"));
+                    crime.setDate(jsonObject.getString("month"));
+                    crime.setLatitude(location.getString("latitude"));
+                    crime.setLongitude(location.getString("longitude"));
+                    crime.setCrimeType(jsonObject.getString("category"));
+                    crime.setUID(count);
+                    crimesAPI.add(crime);
+                } */
 
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return data;
     }
 }
