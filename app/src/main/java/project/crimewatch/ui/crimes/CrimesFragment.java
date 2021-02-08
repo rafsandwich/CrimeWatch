@@ -16,8 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import project.crimewatch.Crime;
 import project.crimewatch.MainActivity;
@@ -26,7 +25,8 @@ import project.crimewatch.R;
 // Crimes Page
 public class CrimesFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
     private CrimesViewModel crimesViewModel;
-    Button btn;
+    Button btnDisplayCrimes;
+    Button btnDisplayCrimesViaAPI;
     TextView tv;
     Spinner ddCrimeTypes;
     Spinner ddDates;
@@ -40,7 +40,8 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         View root = inflater.inflate(R.layout.fragment_crimes, container, false);
 
         // Find from layout
-        btn = (Button)root.findViewById(R.id.btnDisplayCrimes);
+        btnDisplayCrimes = (Button)root.findViewById(R.id.btnDisplayCrimes);
+        btnDisplayCrimesViaAPI = (Button)root.findViewById(R.id.btnDisplayCrimesViaAPI) ;
         tv = (TextView)root.findViewById(R.id.tvDisplayCrimes);
         ddCrimeTypes = (Spinner)root.findViewById(R.id.ddCrimeTypes);
         ddDates = (Spinner)root.findViewById(R.id.ddDates);
@@ -63,9 +64,10 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         adapterDate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         ddDates.setAdapter(adapterDate);
 
-        // Set layout stuff
+        // Set layout stuff/Button event listeners
         tv.setMovementMethod(new ScrollingMovementMethod());
-        btn.setOnClickListener(this);
+        btnDisplayCrimes.setOnClickListener(this);
+        btnDisplayCrimesViaAPI.setOnClickListener(this);
         ddCrimeTypes.setOnItemSelectedListener(this);
         ddDates.setOnItemSelectedListener(this);
 
@@ -74,7 +76,19 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
 
     @Override
     public void onClick(View v) {
-        tv.setText(getData(inputDate, inputCrimeType));
+
+        switch(v.getId())
+        {
+            case R.id.btnDisplayCrimes:
+                tv.setText(getData(inputDate, inputCrimeType));
+                break;
+            case R.id.btnDisplayCrimesViaAPI:
+                tv.setText(getDataAPI());
+                break;
+
+            default:
+                break;
+        }
     }
 
     public String getData(String date, String crimeType) {
@@ -129,6 +143,22 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
 
 
         return data;
+    }
+
+    public String getDataAPI() {
+        /**
+         * new GetAPIData() returns an async task that needs to be executed, and once its completed get()
+         * returns the data from doInBackground()
+         */
+        try {
+            return new GetAPIData().execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return "API CALL FAILED";
     }
 
     @Override

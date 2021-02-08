@@ -18,6 +18,11 @@ public class Crime
     private String crimeType;
 
 
+    public Crime()
+    {
+
+    }
+
     public Crime(String crimeID, String date, String reportedBy, String fallsWithin,
                  String latitude, String longitude, String location, String LSOACode,
                  String LSOAName, String crimeType)
@@ -129,4 +134,6 @@ public class Crime
     public static int getCount() { return count; }
 
     public int getUID() { return UID; }
+
+    public void setUID(int id) { this.UID = id; }
 }
