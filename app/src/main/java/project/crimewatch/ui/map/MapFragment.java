@@ -66,7 +66,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        locationPermission();
         return root;
     }
 
@@ -82,68 +81,5 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(oxford));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(oxford));
         mMap.addMarker(markerOptions);
-
-    }
-
-    /**
-     * Permissions are good so initialize map
-     */
-    private void initMap() {
-        SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.map);
-
-        mapFragment.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(GoogleMap googleMap) {
-                Log.d(TAG, "onMapReady: Map is ready");
-                mMap = googleMap;
-            }
-        });
-    }
-
-    /**
-     * asks for location permission to use map api
-     */
-    private void locationPermission() {
-        Log.d(TAG, "locationPermission: getting location permissions");
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
-                    COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                mLocationsPermissionGranted = true;
-            } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        permissions,
-                        LOCATION_PERMISSION_REQUEST_CODE);
-            }
-        }
-    }
-
-    @Override
-    /**
-     * checks and logs whether permission request failed.
-     */
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: called");
-        mLocationsPermissionGranted = false;
-
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0) {
-                for (int grantResult : grantResults) {
-                    if (grantResult != PackageManager.PERMISSION_GRANTED) {
-                        Log.d(TAG, "onRequestPermissionsResult: permission failed");
-                        mLocationsPermissionGranted = false;
-                        return;
-                    }
-                }
-                Log.d(TAG, "onRequestPermissionsResult: permission granted");
-                mLocationsPermissionGranted = true;
-                // Initialize the map
-                Log.d(TAG, "onRequestPermissionsResult: Initializing map");
-                initMap();
-            }
-        }
     }
 }
