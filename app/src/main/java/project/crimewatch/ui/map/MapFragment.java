@@ -46,6 +46,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) { //kept getting a null error this fixed
             FragmentManager fragMng = getFragmentManager();
@@ -73,8 +74,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googlemap) {
         mMap = googlemap;
         LatLng oxford = new LatLng(51.75222, -1.25596);
-//        mMap.addMarker(new MarkerOptions().position(oxford).title("Central Oxford marker"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(oxford));
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(oxford);
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
@@ -91,17 +90,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     private void initMap() {
         SupportMapFragment mapFragment = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.map);
-        //mapFragment.getMapAsync(this);
 
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
                 Log.d(TAG, "onMapReady: Map is ready");
                 mMap = googleMap;
-                LatLng oxford = new LatLng(51.75222, -1.25596);
-                mMap.addMarker(new MarkerOptions().position(oxford).title("Central Oxford marker"));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(oxford));
-
             }
         });
     }
