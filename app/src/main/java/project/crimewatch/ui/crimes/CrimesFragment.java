@@ -1,8 +1,6 @@
 package project.crimewatch.ui.crimes;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
@@ -10,9 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -89,10 +85,10 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
                 tv.setText(getDataAPI());
                 break;
             case R.id.tvMonths:
-                monthsOnClick();
+                checkBoxOnClick(monthArray, selectedMonth, monthList, tvMonths);
                 break;
             case R.id.tvCrimes:
-                crimesOnClick();
+                checkBoxOnClick(crimeArray, selectedCrime, crimeList, tvCrimes);
                 break;
 
             default:
@@ -171,7 +167,8 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         return "API CALL FAILED";
     }
 
-    public void monthsOnClick()
+    public void checkBoxOnClick(String[] optionsArray, boolean[] selectedOptions, ArrayList<Integer> optionsList,
+                                TextView textView)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
@@ -179,18 +176,18 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
 
         builder.setCancelable(false);
 
-        builder.setMultiChoiceItems(monthArray, selectedMonth, new DialogInterface.OnMultiChoiceClickListener() {
+        builder.setMultiChoiceItems(optionsArray, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                 if(isChecked)
                 {
-                    monthList.add(which);
+                    optionsList.add(which);
 
-                    Collections.sort(monthList);
+                    Collections.sort(optionsList);
                 }
                 else
                 {
-                    monthList.remove(which);
+                    optionsList.remove(which);
                 }
             }
         });
@@ -200,16 +197,16 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
             public void onClick(DialogInterface dialog, int which) {
                 StringBuilder stringBuilder = new StringBuilder();
 
-                for(int j = 0; j<monthList.size(); j++)
+                for(int j = 0; j<optionsList.size(); j++)
                 {
-                    stringBuilder.append(monthArray[monthList.get(j)]);
+                    stringBuilder.append(optionsArray[optionsList.get(j)]);
 
-                    if(j != monthList.size()-1)
+                    if(j != optionsList.size()-1)
                     {
                         stringBuilder.append(", ");
                     }
                 }
-                tvMonths.setText(stringBuilder.toString());
+                textView.setText(stringBuilder.toString());
             }
         });
 
@@ -223,84 +220,18 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                for (int j = 0; j<selectedMonth.length; j++)
+                for (int j = 0; j<selectedOptions.length; j++)
                 {
-                    selectedMonth[j] = false;
-                    monthList.clear();
+                    selectedOptions[j] = false;
+                    optionsList.clear();
 
-                    tvMonths.setText("");
+                    textView.setText("");
                 }
             }
         });
 
         builder.show();
     }
-
-    public void crimesOnClick()
-    {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-        builder.setTitle("Select Crimes");
-
-        builder.setCancelable(false);
-
-        builder.setMultiChoiceItems(crimeArray, selectedCrime, new DialogInterface.OnMultiChoiceClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
-                if(isChecked)
-                {
-                    crimeList.add(which);
-
-                    Collections.sort(crimeList);
-                }
-                else
-                {
-                    crimeList.remove(which);
-                }
-            }
-        });
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for(int j = 0; j<crimeList.size(); j++)
-                {
-                    stringBuilder.append(crimeArray[crimeList.get(j)]);
-
-                    if(j != crimeList.size()-1)
-                    {
-                        stringBuilder.append(", ");
-                    }
-                }
-                tvCrimes.setText(stringBuilder.toString());
-            }
-        });
-
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                for (int j = 0; j<selectedCrime.length; j++)
-                {
-                    selectedCrime[j] = false;
-                    crimeList.clear();
-
-                    tvCrimes.setText("");
-                }
-            }
-        });
-
-        builder.show();
-    }
-
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
