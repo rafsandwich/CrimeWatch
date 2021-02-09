@@ -172,7 +172,15 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-        builder.setTitle("Select Months");
+        builder.setTitle(textView.getResources().getResourceName(textView.getId()));
+
+        if(textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvMonths"))
+        {
+            builder.setTitle("Select Month(s)");
+        } else if (textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvCrimes"))
+        {
+            builder.setTitle("Select Crime Type(s)");
+        }
 
         builder.setCancelable(false);
 
