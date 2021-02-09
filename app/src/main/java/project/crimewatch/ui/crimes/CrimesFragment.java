@@ -1,5 +1,9 @@
 package project.crimewatch.ui.crimes;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
@@ -16,6 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import project.crimewatch.Crime;
@@ -28,10 +34,20 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     Button btnDisplayCrimes;
     Button btnDisplayCrimesViaAPI;
     TextView tv;
-    Spinner ddCrimeTypes;
-    Spinner ddDates;
+    TextView tvMonths;
+    TextView tvCrimes;
     String inputCrimeType;
     String inputDate;
+
+    String[] monthArray = {"09-2020", "10-2020", "11-2020", "12-2020"};
+    ArrayList<Integer> monthList = new ArrayList<>();
+    boolean[] selectedMonth;
+
+    String[] crimeArray = {"All Crimes", "Other theft", "Public order", "Theft from the person",
+    "Anti-social behaviour", "Violence and sexual offences", "Burglary", "Drugs", "Possession of weapons",
+    "Vehicle crime", "Criminal damage and arson", "Shoplifting", "Bicycle theft", "Robbery"};
+    ArrayList<Integer> crimeList = new ArrayList<>();
+    boolean[] selectedCrime;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -43,33 +59,20 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         btnDisplayCrimes = (Button)root.findViewById(R.id.btnDisplayCrimes);
         btnDisplayCrimesViaAPI = (Button)root.findViewById(R.id.btnDisplayCrimesViaAPI) ;
         tv = (TextView)root.findViewById(R.id.tvDisplayCrimes);
-        ddCrimeTypes = (Spinner)root.findViewById(R.id.ddCrimeTypes);
-        ddDates = (Spinner)root.findViewById(R.id.ddDates);
+        tvMonths = (TextView)root.findViewById(R.id.tvMonths);
+        tvCrimes = (TextView)root.findViewById(R.id.tvCrimes);
 
-        //Set default positions for dd lists
-        ddCrimeTypes.setSelection(0);
-        ddDates.setSelection(0);
-
-        //Drop Down list stuff
-
-        //Crime Types
-        ArrayAdapter<CharSequence> adapterCrimeTypes = ArrayAdapter.createFromResource(requireActivity().getApplicationContext(),
-                R.array.ddCrimeTypes, android.R.layout.simple_spinner_item);
-        adapterCrimeTypes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ddCrimeTypes.setAdapter(adapterCrimeTypes);
-
-        //Dates
-        ArrayAdapter<CharSequence> adapterDate = ArrayAdapter.createFromResource(requireActivity().getApplicationContext(),
-                R.array.ddDates, android.R.layout.simple_spinner_item);
-        adapterDate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ddDates.setAdapter(adapterDate);
 
         // Set layout stuff/Button event listeners
         tv.setMovementMethod(new ScrollingMovementMethod());
         btnDisplayCrimes.setOnClickListener(this);
         btnDisplayCrimesViaAPI.setOnClickListener(this);
-        ddCrimeTypes.setOnItemSelectedListener(this);
-        ddDates.setOnItemSelectedListener(this);
+
+        selectedMonth = new boolean[monthArray.length];
+        selectedCrime = new boolean[crimeArray.length];
+
+        tvMonths.setOnClickListener(this);
+        tvCrimes.setOnClickListener(this);
 
         return root;
     }
@@ -85,11 +88,18 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
             case R.id.btnDisplayCrimesViaAPI:
                 tv.setText(getDataAPI());
                 break;
+            case R.id.tvMonths:
+                monthsOnClick();
+                break;
+            case R.id.tvCrimes:
+                crimesOnClick();
+                break;
 
             default:
                 break;
         }
     }
+
 
     public String getData(String date, String crimeType) {
         String data = "";
@@ -161,16 +171,140 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         return "API CALL FAILED";
     }
 
+    public void monthsOnClick()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle("Select Months");
+
+        builder.setCancelable(false);
+
+        builder.setMultiChoiceItems(monthArray, selectedMonth, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if(isChecked)
+                {
+                    monthList.add(which);
+
+                    Collections.sort(monthList);
+                }
+                else
+                {
+                    monthList.remove(which);
+                }
+            }
+        });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for(int j = 0; j<monthList.size(); j++)
+                {
+                    stringBuilder.append(monthArray[monthList.get(j)]);
+
+                    if(j != monthList.size()-1)
+                    {
+                        stringBuilder.append(", ");
+                    }
+                }
+                tvMonths.setText(stringBuilder.toString());
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                for (int j = 0; j<selectedMonth.length; j++)
+                {
+                    selectedMonth[j] = false;
+                    monthList.clear();
+
+                    tvMonths.setText("");
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    public void crimesOnClick()
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle("Select Crimes");
+
+        builder.setCancelable(false);
+
+        builder.setMultiChoiceItems(crimeArray, selectedCrime, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if(isChecked)
+                {
+                    crimeList.add(which);
+
+                    Collections.sort(crimeList);
+                }
+                else
+                {
+                    crimeList.remove(which);
+                }
+            }
+        });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for(int j = 0; j<crimeList.size(); j++)
+                {
+                    stringBuilder.append(crimeArray[crimeList.get(j)]);
+
+                    if(j != crimeList.size()-1)
+                    {
+                        stringBuilder.append(", ");
+                    }
+                }
+                tvCrimes.setText(stringBuilder.toString());
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                for (int j = 0; j<selectedCrime.length; j++)
+                {
+                    selectedCrime[j] = false;
+                    crimeList.clear();
+
+                    tvCrimes.setText("");
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(parent.getId() == R.id.ddCrimeTypes)
-        {
-            inputCrimeType = (String) ddCrimeTypes.getItemAtPosition(position);
-        }
-        else if (parent.getId() == R.id.ddDates)
-        {
-            inputDate = (String)ddDates.getItemAtPosition(position);
-        }
+
     }
 
     @Override
