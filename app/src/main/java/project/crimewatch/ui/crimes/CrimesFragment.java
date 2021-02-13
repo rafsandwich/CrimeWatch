@@ -35,7 +35,7 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     String inputCrimeType;
     String inputDate;
 
-    String[] monthArray = {"09-2020", "10-2020", "11-2020", "12-2020"};
+    String[] monthArray = {"2020-09", "2020-10", "2020-11", "2020-11"};
     ArrayList<Integer> monthList = new ArrayList<>();
     boolean[] selectedMonth;
 
@@ -44,6 +44,7 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     "Vehicle crime", "Criminal damage and arson", "Shoplifting", "Bicycle theft", "Robbery"};
     ArrayList<Integer> crimeList = new ArrayList<>();
     ArrayList<String> userCrimes = new ArrayList<>();
+    ArrayList<String> userMonths = new ArrayList<>();
     boolean[] selectedCrime;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -80,13 +81,13 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         switch(v.getId())
         {
             case R.id.btnDisplayCrimes:
-                tv.setText(getData(inputDate, inputCrimeType));
+                tv.setText(getData(userCrimes, userMonths));
                 break;
             case R.id.btnDisplayCrimesViaAPI:
                 tv.setText(getDataAPI());
                 break;
             case R.id.tvMonths:
-                checkBoxOnClick(monthArray, selectedMonth, monthList, tvMonths);
+                checkBoxOnClickMonth(monthArray, selectedMonth, monthList, tvMonths);
                 break;
             case R.id.tvCrimes:
                 checkBoxOnClick(crimeArray, selectedCrime, crimeList, tvCrimes);
@@ -98,57 +99,30 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     }
 
 
-    public String getData(String date, String crimeType) {
+    public String getData(ArrayList<String> userCrimes, ArrayList<String> userMonths) {
         String data = "";
 
-        // If the user wants all crimes from all dates
-        if (inputCrimeType.equals("All Crimes") && inputDate.equals("All Dates"))
-        {
-            for (Crime crime : MainActivity.crimes)
-            {
-                data += crime.displayCrimeData() + "\n\n";
-            }
-        }
+        //Loop through arraylist
+        //loop through crimes
+        //if arraylist i is equal to crime.date or crime.crimetype
+        //add it to string
 
-        // If the user wants all crimes, from a specific date
-        else if (inputCrimeType.equals("All Crimes"))
-        {
-            for (Crime crime : MainActivity.crimes)
-            {
-                // If the crime happened on that Specific Date
-                if(crime.getDate().equals(date))
-                {
-                    data += crime.displayCrimeData() + "\n\n";
-                }
-            }
-        }
-
-        // If the user wants specific crimes from all dates
-        else if (inputDate.equals("All Dates"))
+        for(int i = 0; i < userCrimes.size(); i++)
         {
             for(Crime crime : MainActivity.crimes)
             {
-                // If the crime type is the specific crime type, regardless of date
-                if(crime.getCrimeType().equals(crimeType))
+                if(crime.getCrimeType().equals(userCrimes.get(i)))
                 {
-                    data += crime.displayCrimeData() + "\n\n";
+                    for(int j = 0; j < userMonths.size(); j++)
+                    {
+                        if (crime.getDate().equals(userMonths.get(j)))
+                        {
+                            data += crime.displayCrimeData() + "\n\n";
+                        }
+                    }
                 }
             }
         }
-
-        // If the user wants a specific crime from specific date
-        else
-        {
-            for (Crime crime : MainActivity.crimes)
-            {
-                if (crime.getCrimeType().equals(crimeType) && crime.getDate().equals(date))
-                {
-                    data += crime.displayCrimeData() + "\n\n";
-                }
-            }
-        }
-
-
         return data;
     }
 
@@ -209,6 +183,80 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
                 {
                     stringBuilder.append(optionsArray[optionsList.get(j)]);
                     userCrimes.add(optionsArray[optionsList.get(j)]);
+
+                    if(j != optionsList.size()-1)
+                    {
+                        stringBuilder.append(", ");
+                    }
+                }
+                textView.setText(stringBuilder.toString());
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                for (int j = 0; j<selectedOptions.length; j++)
+                {
+                    selectedOptions[j] = false;
+                    optionsList.clear();
+
+                    textView.setText("");
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    public void checkBoxOnClickMonth(String[] optionsArray, boolean[] selectedOptions, ArrayList<Integer> optionsList,
+                                TextView textView)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle(textView.getResources().getResourceName(textView.getId()));
+
+        if(textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvMonths"))
+        {
+            builder.setTitle("Select Month(s)");
+        } else if (textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvCrimes"))
+        {
+            builder.setTitle("Select Crime Type(s)");
+        }
+
+        builder.setCancelable(false);
+
+        builder.setMultiChoiceItems(optionsArray, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if(isChecked)
+                {
+                    optionsList.add(which);
+                    Collections.sort(optionsList);
+                }
+                else
+                {
+                    optionsList.remove(which);
+                }
+            }
+        });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for(int j = 0; j<optionsList.size(); j++)
+                {
+                    stringBuilder.append(optionsArray[optionsList.get(j)]);
+                    userMonths.add(optionsArray[optionsList.get(j)]);
 
                     if(j != optionsList.size()-1)
                     {
