@@ -43,6 +43,7 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     "Anti-social behaviour", "Violence and sexual offences", "Burglary", "Drugs", "Possession of weapons",
     "Vehicle crime", "Criminal damage and arson", "Shoplifting", "Bicycle theft", "Robbery"};
     ArrayList<Integer> crimeList = new ArrayList<>();
+    ArrayList<String> userCrimes = new ArrayList<>();
     boolean[] selectedCrime;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -190,7 +191,6 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
                 if(isChecked)
                 {
                     optionsList.add(which);
-
                     Collections.sort(optionsList);
                 }
                 else
@@ -208,6 +208,7 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
                 for(int j = 0; j<optionsList.size(); j++)
                 {
                     stringBuilder.append(optionsArray[optionsList.get(j)]);
+                    userCrimes.add(optionsArray[optionsList.get(j)]);
 
                     if(j != optionsList.size()-1)
                     {
