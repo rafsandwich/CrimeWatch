@@ -43,7 +43,11 @@ import com.google.android.gms.tasks.Task;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.crimewatch.Crime;
+import project.crimewatch.MainActivity;
 import project.crimewatch.R;
+
+import static java.lang.Double.parseDouble;
 
 // Maps Page
 public class MapFragment extends Fragment implements OnMapReadyCallback {
@@ -99,6 +103,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(oxford));
 //        mMap.animateCamera(CameraUpdateFactory.newLatLng(oxford));
 //        mMap.addMarker(markerOptions);
+
+        for (int i = 0; i < 50; i++) {
+            Crime crime = MainActivity.crimes.get(i);
+            LatLng activity = new LatLng(parseDouble(crime.getLongitude()), parseDouble(crime.getLatitude()));
+            MarkerOptions markersOptions = new MarkerOptions();
+            markersOptions.position(activity);
+            markersOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            markersOptions.title(crime.getUID() + ": " + crime.getCrimeType());
+            markersOptions.snippet("Crime level: 5");
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(activity));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(activity));
+            mMap.addMarker(markersOptions);
+        }
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1200000);
