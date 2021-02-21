@@ -35,7 +35,7 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     String inputCrimeType;
     String inputDate;
 
-    String[] monthArray = {"2020-09", "2020-10", "2020-11", "2020-11"};
+    String[] monthArray = {"2020-09", "2020-10", "2020-11", "2020-12"};
     ArrayList<Integer> monthList = new ArrayList<>();
     boolean[] selectedMonth;
 
@@ -109,11 +109,11 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
 
         for(int i = 0; i < userCrimes.size(); i++)
         {
-            for(Crime crime : MainActivity.crimes)
-            {
-                if(crime.getCrimeType().equals(userCrimes.get(i)))
-                {
-                    for(int j = 0; j < userMonths.size(); j++)
+                        for(Crime crime : MainActivity.crimes)
+                        {
+                            if(crime.getCrimeType().equals(userCrimes.get(i)))
+                            {
+                                for(int j = 0; j < userMonths.size(); j++)
                     {
                         if (crime.getDate().equals(userMonths.get(j)))
                         {
