@@ -55,30 +55,6 @@ public class MainActivity extends AppCompatActivity {
         // Check app can access map api
         checkServices();
 
-        //trying to use a set of crime types to fill a spinner
-//        Spinner crimesSpinner = (Spinner) findViewById(R.id.ddCrimeTypes);
-//
-//        String[] crimeTypes = new String[]{};
-//        final List<String> crimeTypeList = new ArrayList<>(Arrays.asList(crimeTypes));
-//        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-//                this,R.layout.fragment_crimes,crimeTypeList);
-//        spinnerArrayAdapter.setDropDownViewResource(R.layout.fragment_crimes);
-//        // N2S: below is a problem
-//        crimesSpinner.setAdapter(spinnerArrayAdapter);
-//
-//        SortedSet<String> crimeTypesSet = null;
-//        try {
-//            createCrimeList(crimeTypesSet);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        for (String each: crimeTypesSet) {
-//            crimeTypeList.add(each);
-//            spinnerArrayAdapter.notifyDataSetChanged();
-//        }
-
-
         try {
             readCrimeData(crimes);
         } catch (IOException e) {
