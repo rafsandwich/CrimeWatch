@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import project.crimewatch.Crime;
+import project.crimewatch.MainActivity;
 
 
 /**
@@ -25,7 +26,7 @@ public class GetAPIData extends AsyncTask<Void, Void, String>
     @Override
     protected String doInBackground(Void... voids) {
         String data = "";
-        ArrayList<Crime> crimesAPI = new ArrayList<Crime>();
+
 
         try {
             // Set URL and make connection
@@ -53,7 +54,7 @@ public class GetAPIData extends AsyncTask<Void, Void, String>
                  * Parse response and add add crimes to crime list
                  * Will return crimes list in future and that will replace the need for csv's
                  */
-                /*
+
                 JSONArray jsonArray = new JSONArray(data);
                 for(int count = 0; count < jsonArray.length(); count++)
                 {
@@ -66,8 +67,8 @@ public class GetAPIData extends AsyncTask<Void, Void, String>
                     crime.setLongitude(location.getString("longitude"));
                     crime.setCrimeType(jsonObject.getString("category"));
                     crime.setUID(count);
-                    crimesAPI.add(crime);
-                } */
+                    MainActivity.crimesAPI.add(crime);
+                }
 
             }
         } catch (Exception e) {

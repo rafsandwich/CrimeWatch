@@ -28,10 +28,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.concurrent.ExecutionException;
+
+import project.crimewatch.ui.crimes.GetAPIData;
 
 
 public class MainActivity extends AppCompatActivity {
     public static ArrayList<Crime> crimes = new ArrayList<Crime>();
+    public static ArrayList<Crime> crimesAPI = new ArrayList<Crime>();
     private static final String TAG = "MainActivity";
     // This is the error code if user has the incorrect google play services installed for
     // maps API to function.
@@ -158,3 +162,4 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 }
+

@@ -37,26 +37,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Spinner
-        android:id="@+id/ddCrimeTypes"
-        android:layout_width="278dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Spinner
-        android:id="@+id/ddDates"
-        android:layout_width="276dp"
-        android:layout_height="22dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="56dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/btnDisplayCrimesViaAPI"
         android:layout_width="98dp"
@@ -68,5 +48,38 @@
         android:textSize="10sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvMonths"
+        android:layout_width="213dp"
+        android:layout_height="42dp"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="92dp"
+        android:drawablePadding="16dp"
+        android:hint="Select Month(s)"
+        android:padding="12dp"
+        app:drawableEndCompat="@android:drawable/arrow_down_float"
+        app:drawableRightCompat="@android:drawable/arrow_down_float"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCrimes"
+        android:layout_width="213dp"
+        android:layout_height="42dp"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="28dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginTop="32dp"
+        android:drawablePadding="16dp"
+        android:hint="Select Crime Type(s)"
+        android:padding="12dp"
+        app:drawableEndCompat="@android:drawable/arrow_down_float"
+        app:drawableRightCompat="@android:drawable/arrow_down_float"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
