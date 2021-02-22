@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
@@ -107,13 +108,22 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         //if arraylist i is equal to crime.date or crime.crimetype
         //add it to string
 
+        // If all crimes has been selected, clear the list, add all the crime types
+        // and remove "All Crimes".
+        if (userCrimes.contains("All Crimes"))
+        {
+            userCrimes.clear();
+            userCrimes.addAll(Arrays.asList(crimeArray));
+            userCrimes.remove("All Crimes");
+        }
+
         for(int i = 0; i < userCrimes.size(); i++)
         {
-                        for(Crime crime : MainActivity.crimes)
-                        {
-                            if(crime.getCrimeType().equals(userCrimes.get(i)))
-                            {
-                                for(int j = 0; j < userMonths.size(); j++)
+            for(Crime crime : MainActivity.crimes)
+            {
+                if(crime.getCrimeType().equals(userCrimes.get(i)))
+                {
+                    for(int j = 0; j < userMonths.size(); j++)
                     {
                         if (crime.getDate().equals(userMonths.get(j)))
                         {
