@@ -32,20 +32,20 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     TextView tv;
     TextView tvMonths;
     TextView tvCrimes;
-    String inputCrimeType;
-    String inputDate;
 
-    String[] monthArray = {"2020-09", "2020-10", "2020-11", "2020-12"};
-    ArrayList<Integer> monthList = new ArrayList<>();
-    boolean[] selectedMonth;
-
+    // Checkbox stuff
+    String[] monthArray = {"2020-09", "2020-10", "2020-11", "2020-11"};
     String[] crimeArray = {"All Crimes", "Other theft", "Public order", "Theft from the person",
-    "Anti-social behaviour", "Violence and sexual offences", "Burglary", "Drugs", "Possession of weapons",
-    "Vehicle crime", "Criminal damage and arson", "Shoplifting", "Bicycle theft", "Robbery"};
+            "Anti-social behaviour", "Violence and sexual offences", "Burglary", "Drugs", "Possession of weapons",
+            "Vehicle crime", "Criminal damage and arson", "Shoplifting", "Bicycle theft", "Robbery"};
+    ArrayList<Integer> monthList = new ArrayList<>();
     ArrayList<Integer> crimeList = new ArrayList<>();
+    boolean[] selectedMonth;
+    boolean[] selectedCrime;
+
     ArrayList<String> userCrimes = new ArrayList<>();
     ArrayList<String> userMonths = new ArrayList<>();
-    boolean[] selectedCrime;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
                 tv.setText(getData(userCrimes, userMonths));
                 break;
             case R.id.btnDisplayCrimesViaAPI:
-                tv.setText(getDataAPI());
+                tv.setText(getDataAPI(tv));
                 break;
             case R.id.tvMonths:
                 checkBoxOnClickMonth(monthArray, selectedMonth, monthList, tvMonths);
@@ -126,20 +126,26 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         return data;
     }
 
-    public String getDataAPI() {
+    public String getDataAPI(TextView tv) {
         /**
          * new GetAPIData() returns an async task that needs to be executed, and once its completed get()
          * returns the data from doInBackground()
          */
         try {
-            return new GetAPIData().execute().get();
+            new GetAPIData().execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
+        String data = "";
 
-        return "API CALL FAILED";
+        for(Crime crime : MainActivity.crimesAPI)
+        {
+            data += crime.displayCrimeData() + "\n\n";
+        }
+        return data;
     }
 
     public void checkBoxOnClick(String[] optionsArray, boolean[] selectedOptions, ArrayList<Integer> optionsList,
