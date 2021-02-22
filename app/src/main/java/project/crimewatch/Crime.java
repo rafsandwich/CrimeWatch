@@ -23,6 +23,7 @@ public class Crime
 
     }
 
+    // TODO lat and long need to switch positions to be correct.
     public Crime(String crimeID, String date, String reportedBy, String fallsWithin,
                  String latitude, String longitude, String location, String LSOACode,
                  String LSOAName, String crimeType)
