@@ -115,6 +115,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     //begin search
                     geoLocate();
+                    //GeolocateMap.execute()
 
                 }
                 return false;
