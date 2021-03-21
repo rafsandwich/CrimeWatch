@@ -1,5 +1,6 @@
 package project.crimewatch.ui.map;
 
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
@@ -16,20 +17,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeolocateMap extends AsyncTask<Void, Void, String> {
 
-    private MapViewModel mapViewModel;
-    private static final String TAG = "MapActivity";
-    private static final float DEFAULT_ZOOM = 15;
-    GoogleMap mMap;
-    private EditText mSearchText;
-
-
-
-    @Override
-    protected String doInBackground(Void... voids) {
-
-//        private void geoLocate(){
+//public class GeolocateMap extends AsyncTask<Void, Void, String> {
+//
+//    private MapViewModel mapViewModel;
+//    private static final String TAG = "MapActivity";
+//    private static final float DEFAULT_ZOOM = 15;
+//    GoogleMap mMap;
+//    private EditText mSearchText;
+//
+//
+//
+//    @Override
+//    protected String doInBackground(Void... voids) {
+//
+//        private void geoLocate() {
 //            Log.d(TAG, "geoLocate: geolocating");
 //
 //            String searchString = mSearchText.getText().toString();
@@ -50,9 +52,7 @@ public class GeolocateMap extends AsyncTask<Void, Void, String> {
 //            }
 //        }
 //
-//        private void moveCamera(LatLng LatLng latLng;
-//        latLng, float zoom, String String title;
-//        title){
+//        private void moveCamera(LatLng latLng, float zoom, String title){
 //            Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
 //            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 //
@@ -61,7 +61,10 @@ public class GeolocateMap extends AsyncTask<Void, Void, String> {
 //                    .title(title);
 //            mMap.addMarker(options);
 //        }
+//
+//        return null;
+//    }
+//
+//
+//    }
 
-        return null;
-    }
-}

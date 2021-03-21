@@ -3,6 +3,7 @@ package project.crimewatch.ui.map;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,6 +104,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return root;
     }
 
+
     private void init(){
         Log.d(TAG, "init: initalising");
 
@@ -113,9 +116,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) { //this allows enter to be used rather than submit button
 
+                    InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+
                     //begin search
                     geoLocate();
-                    //GeolocateMap.execute()
+                    //GeolocateMap.execute().geoLocate();
 
                 }
                 return false;
@@ -142,12 +148,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));
         }
+        else{Log.d(TAG, "geoLocate: could not find a location matching '" + mSearchText.getText().toString() + "'");}
     }
 
     private void moveCamera(LatLng latLng, float zoom, String title){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
+        //marker dropped everytime for demonstration, remove this if you just want functionality
+        //of geolocate without extra markers
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(title);
