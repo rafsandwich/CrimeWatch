@@ -51,6 +51,7 @@ import com.google.android.gms.tasks.Task;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import project.crimewatch.Crime;
 import project.crimewatch.MainActivity;
@@ -76,6 +77,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Boolean mLocationsPermissionGranted = false;
     GoogleMap mMap;
+    Address addressTemp;
 
     SupportMapFragment mapFragment;
 
@@ -121,6 +123,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                     //begin search
                     geoLocate();
+                    MainActivity.tempLat = "" + addressTemp.getLatitude();
+                    MainActivity.tempLong = "" + addressTemp.getLongitude();
+                    nonOxCrimes();
                     //GeolocateMap.execute().geoLocate();
 
                 }
@@ -147,6 +152,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));
+            addressTemp = list.get(0);
+
         }
         else{Log.d(TAG, "geoLocate: could not find a location matching '" + mSearchText.getText().toString() + "'");}
     }
@@ -302,6 +309,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             // other 'case' lines to check for other
             // permissions this app might request
+        }
+    }
+
+    public void nonOxCrimes()
+    {
+        // Clear the map and list ready for new pins
+        mMap.clear();
+        MainActivity.tempList.clear();
+
+        try {
+            new tempGetAPIData().execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < 30; i++) {
+            Crime crime = MainActivity.tempList.get(i);
+            LatLng activity = new LatLng(parseDouble(crime.getLatitude()), parseDouble(crime.getLongitude()));
+            MarkerOptions markersOptions = new MarkerOptions();
+            markersOptions.position(activity);
+            markersOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            markersOptions.title(crime.getUID() + ": " + crime.getCrimeType());
+            markersOptions.snippet("Crime level: 5");
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(activity));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(activity));
+            mMap.addMarker(markersOptions);
+
+            Toast.makeText(getContext(), MainActivity.tempList.get(i).toString(), Toast.LENGTH_SHORT).show();
         }
     }
 
