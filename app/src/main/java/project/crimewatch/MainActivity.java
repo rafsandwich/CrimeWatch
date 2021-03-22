@@ -28,10 +28,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.concurrent.ExecutionException;
+
+import project.crimewatch.ui.crimes.GetAPIData;
 
 
 public class MainActivity extends AppCompatActivity {
     public static ArrayList<Crime> crimes = new ArrayList<Crime>();
+    public static ArrayList<Crime> crimesAPI = new ArrayList<Crime>();
     private static final String TAG = "MainActivity";
     // This is the error code if user has the incorrect google play services installed for
     // maps API to function.
@@ -54,30 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Check app can access map api
         checkServices();
-
-        //trying to use a set of crime types to fill a spinner
-//        Spinner crimesSpinner = (Spinner) findViewById(R.id.ddCrimeTypes);
-//
-//        String[] crimeTypes = new String[]{};
-//        final List<String> crimeTypeList = new ArrayList<>(Arrays.asList(crimeTypes));
-//        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(
-//                this,R.layout.fragment_crimes,crimeTypeList);
-//        spinnerArrayAdapter.setDropDownViewResource(R.layout.fragment_crimes);
-//        // N2S: below is a problem
-//        crimesSpinner.setAdapter(spinnerArrayAdapter);
-//
-//        SortedSet<String> crimeTypesSet = null;
-//        try {
-//            createCrimeList(crimeTypesSet);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        for (String each: crimeTypesSet) {
-//            crimeTypeList.add(each);
-//            spinnerArrayAdapter.notifyDataSetChanged();
-//        }
-
 
         try {
             readCrimeData(crimes);
@@ -158,3 +138,4 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 }
+

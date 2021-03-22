@@ -1,14 +1,14 @@
 package project.crimewatch.ui.crimes;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import project.crimewatch.Crime;
@@ -28,10 +31,22 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
     Button btnDisplayCrimes;
     Button btnDisplayCrimesViaAPI;
     TextView tv;
-    Spinner ddCrimeTypes;
-    Spinner ddDates;
-    String inputCrimeType;
-    String inputDate;
+    TextView tvMonths;
+    TextView tvCrimes;
+
+    // Checkbox stuff
+    String[] monthArray = {"2020-09", "2020-10", "2020-11", "2020-11"};
+    String[] crimeArray = {"All Crimes", "Other theft", "Public order", "Theft from the person",
+            "Anti-social behaviour", "Violence and sexual offences", "Burglary", "Drugs", "Possession of weapons",
+            "Vehicle crime", "Criminal damage and arson", "Shoplifting", "Bicycle theft", "Robbery"};
+    ArrayList<Integer> monthList = new ArrayList<>();
+    ArrayList<Integer> crimeList = new ArrayList<>();
+    boolean[] selectedMonth;
+    boolean[] selectedCrime;
+
+    ArrayList<String> userCrimes = new ArrayList<>();
+    ArrayList<String> userMonths = new ArrayList<>();
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -43,33 +58,20 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         btnDisplayCrimes = (Button)root.findViewById(R.id.btnDisplayCrimes);
         btnDisplayCrimesViaAPI = (Button)root.findViewById(R.id.btnDisplayCrimesViaAPI) ;
         tv = (TextView)root.findViewById(R.id.tvDisplayCrimes);
-        ddCrimeTypes = (Spinner)root.findViewById(R.id.ddCrimeTypes);
-        ddDates = (Spinner)root.findViewById(R.id.ddDates);
+        tvMonths = (TextView)root.findViewById(R.id.tvMonths);
+        tvCrimes = (TextView)root.findViewById(R.id.tvCrimes);
 
-        //Set default positions for dd lists
-        ddCrimeTypes.setSelection(0);
-        ddDates.setSelection(0);
-
-        //Drop Down list stuff
-
-        //Crime Types
-        ArrayAdapter<CharSequence> adapterCrimeTypes = ArrayAdapter.createFromResource(requireActivity().getApplicationContext(),
-                R.array.ddCrimeTypes, android.R.layout.simple_spinner_item);
-        adapterCrimeTypes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ddCrimeTypes.setAdapter(adapterCrimeTypes);
-
-        //Dates
-        ArrayAdapter<CharSequence> adapterDate = ArrayAdapter.createFromResource(requireActivity().getApplicationContext(),
-                R.array.ddDates, android.R.layout.simple_spinner_item);
-        adapterDate.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ddDates.setAdapter(adapterDate);
 
         // Set layout stuff/Button event listeners
         tv.setMovementMethod(new ScrollingMovementMethod());
         btnDisplayCrimes.setOnClickListener(this);
         btnDisplayCrimesViaAPI.setOnClickListener(this);
-        ddCrimeTypes.setOnItemSelectedListener(this);
-        ddDates.setOnItemSelectedListener(this);
+
+        selectedMonth = new boolean[monthArray.length];
+        selectedCrime = new boolean[crimeArray.length];
+
+        tvMonths.setOnClickListener(this);
+        tvCrimes.setOnClickListener(this);
 
         return root;
     }
@@ -80,10 +82,16 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         switch(v.getId())
         {
             case R.id.btnDisplayCrimes:
-                tv.setText(getData(inputDate, inputCrimeType));
+                tv.setText(getData(userCrimes, userMonths));
                 break;
             case R.id.btnDisplayCrimesViaAPI:
-                tv.setText(getDataAPI());
+                tv.setText(getDataAPI(tv));
+                break;
+            case R.id.tvMonths:
+                checkBoxOnClickMonth(monthArray, selectedMonth, monthList, tvMonths);
+                break;
+            case R.id.tvCrimes:
+                checkBoxOnClick(crimeArray, selectedCrime, crimeList, tvCrimes);
                 break;
 
             default:
@@ -91,86 +99,216 @@ public class CrimesFragment extends Fragment implements View.OnClickListener, Ad
         }
     }
 
-    public String getData(String date, String crimeType) {
+
+    public String getData(ArrayList<String> userCrimes, ArrayList<String> userMonths) {
         String data = "";
 
-        // If the user wants all crimes from all dates
-        if (inputCrimeType.equals("All Crimes") && inputDate.equals("All Dates"))
+        //Loop through arraylist
+        //loop through crimes
+        //if arraylist i is equal to crime.date or crime.crimetype
+        //add it to string
+
+        // If all crimes has been selected, clear the list, add all the crime types
+        // and remove "All Crimes".
+        if (userCrimes.contains("All Crimes"))
         {
-            for (Crime crime : MainActivity.crimes)
-            {
-                data += crime.displayCrimeData() + "\n\n";
-            }
+            userCrimes.clear();
+            userCrimes.addAll(Arrays.asList(crimeArray));
+            userCrimes.remove("All Crimes");
         }
 
-        // If the user wants all crimes, from a specific date
-        else if (inputCrimeType.equals("All Crimes"))
-        {
-            for (Crime crime : MainActivity.crimes)
-            {
-                // If the crime happened on that Specific Date
-                if(crime.getDate().equals(date))
-                {
-                    data += crime.displayCrimeData() + "\n\n";
-                }
-            }
-        }
-
-        // If the user wants specific crimes from all dates
-        else if (inputDate.equals("All Dates"))
+        for(int i = 0; i < userCrimes.size(); i++)
         {
             for(Crime crime : MainActivity.crimes)
             {
-                // If the crime type is the specific crime type, regardless of date
-                if(crime.getCrimeType().equals(crimeType))
+                if(crime.getCrimeType().equals(userCrimes.get(i)))
                 {
-                    data += crime.displayCrimeData() + "\n\n";
+                    for(int j = 0; j < userMonths.size(); j++)
+                    {
+                        if (crime.getDate().equals(userMonths.get(j)))
+                        {
+                            data += crime.displayCrimeData() + "\n\n";
+                        }
+                    }
                 }
             }
         }
-
-        // If the user wants a specific crime from specific date
-        else
-        {
-            for (Crime crime : MainActivity.crimes)
-            {
-                if (crime.getCrimeType().equals(crimeType) && crime.getDate().equals(date))
-                {
-                    data += crime.displayCrimeData() + "\n\n";
-                }
-            }
-        }
-
-
         return data;
     }
 
-    public String getDataAPI() {
+    public String getDataAPI(TextView tv) {
         /**
          * new GetAPIData() returns an async task that needs to be executed, and once its completed get()
          * returns the data from doInBackground()
          */
         try {
-            return new GetAPIData().execute().get();
+            new GetAPIData().execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        
+        String data = "";
 
-        return "API CALL FAILED";
+        for(Crime crime : MainActivity.crimesAPI)
+        {
+            data += crime.displayCrimeData() + "\n\n";
+        }
+        return data;
+    }
+
+    public void checkBoxOnClick(String[] optionsArray, boolean[] selectedOptions, ArrayList<Integer> optionsList,
+                                TextView textView)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle(textView.getResources().getResourceName(textView.getId()));
+
+        if(textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvMonths"))
+        {
+            builder.setTitle("Select Month(s)");
+        } else if (textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvCrimes"))
+        {
+            builder.setTitle("Select Crime Type(s)");
+        }
+
+        builder.setCancelable(false);
+
+        builder.setMultiChoiceItems(optionsArray, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if(isChecked)
+                {
+                    optionsList.add(which);
+                    Collections.sort(optionsList);
+                }
+                else
+                {
+                    optionsList.remove(which);
+                }
+            }
+        });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for(int j = 0; j<optionsList.size(); j++)
+                {
+                    stringBuilder.append(optionsArray[optionsList.get(j)]);
+                    userCrimes.add(optionsArray[optionsList.get(j)]);
+
+                    if(j != optionsList.size()-1)
+                    {
+                        stringBuilder.append(", ");
+                    }
+                }
+                textView.setText(stringBuilder.toString());
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                for (int j = 0; j<selectedOptions.length; j++)
+                {
+                    selectedOptions[j] = false;
+                    optionsList.clear();
+
+                    textView.setText("");
+                }
+            }
+        });
+
+        builder.show();
+    }
+
+    public void checkBoxOnClickMonth(String[] optionsArray, boolean[] selectedOptions, ArrayList<Integer> optionsList,
+                                TextView textView)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle(textView.getResources().getResourceName(textView.getId()));
+
+        if(textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvMonths"))
+        {
+            builder.setTitle("Select Month(s)");
+        } else if (textView.getResources().getResourceName(textView.getId()).equals("project.crimewatch:id/tvCrimes"))
+        {
+            builder.setTitle("Select Crime Type(s)");
+        }
+
+        builder.setCancelable(false);
+
+        builder.setMultiChoiceItems(optionsArray, selectedOptions, new DialogInterface.OnMultiChoiceClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                if(isChecked)
+                {
+                    optionsList.add(which);
+                    Collections.sort(optionsList);
+                }
+                else
+                {
+                    optionsList.remove(which);
+                }
+            }
+        });
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                StringBuilder stringBuilder = new StringBuilder();
+
+                for(int j = 0; j<optionsList.size(); j++)
+                {
+                    stringBuilder.append(optionsArray[optionsList.get(j)]);
+                    userMonths.add(optionsArray[optionsList.get(j)]);
+
+                    if(j != optionsList.size()-1)
+                    {
+                        stringBuilder.append(", ");
+                    }
+                }
+                textView.setText(stringBuilder.toString());
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNeutralButton("Clear All", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                for (int j = 0; j<selectedOptions.length; j++)
+                {
+                    selectedOptions[j] = false;
+                    optionsList.clear();
+
+                    textView.setText("");
+                }
+            }
+        });
+
+        builder.show();
     }
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(parent.getId() == R.id.ddCrimeTypes)
-        {
-            inputCrimeType = (String) ddCrimeTypes.getItemAtPosition(position);
-        }
-        else if (parent.getId() == R.id.ddDates)
-        {
-            inputDate = (String)ddDates.getItemAtPosition(position);
-        }
+
     }
 
     @Override
