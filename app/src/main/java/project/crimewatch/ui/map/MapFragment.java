@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.Task;
+import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Boolean mLocationsPermissionGranted = false;
     GoogleMap mMap;
+    private ClusterManager<MyItem> mclusterManager;
 
     SupportMapFragment mapFragment;
 
@@ -94,28 +96,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googlemap) {
         mMap = googlemap;
-//        LatLng oxford = new LatLng(51.75222, -1.25596);
-//        MarkerOptions markerOptions = new MarkerOptions();
-//        markerOptions.position(oxford);
-//        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-//        markerOptions.title("Oxford Marker");
-//        markerOptions.snippet("Crime level: 5");
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(oxford));
-//        mMap.animateCamera(CameraUpdateFactory.newLatLng(oxford));
-//        mMap.addMarker(markerOptions);
-
-        for (int i = 0; i < 50; i++) {
-            Crime crime = MainActivity.crimes.get(i);
-            LatLng activity = new LatLng(parseDouble(crime.getLongitude()), parseDouble(crime.getLatitude()));
-            MarkerOptions markersOptions = new MarkerOptions();
-            markersOptions.position(activity);
-            markersOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            markersOptions.title(crime.getUID() + ": " + crime.getCrimeType());
-            markersOptions.snippet("Crime level: 5");
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(activity));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(activity));
-            mMap.addMarker(markersOptions);
-        }
+        mclusterManager = new ClusterManager<MyItem>(getContext(), mMap);
+        mclusterManager.setRenderer(new MarkerClusterRenderer(getContext(), mMap, mclusterManager));
+        mMap.setOnCameraIdleListener(mclusterManager);
+        mMap.setOnMarkerClickListener(mclusterManager);
+        mMap.setOnInfoWindowClickListener(mclusterManager);
+        addItems();
+        mclusterManager.cluster();
+        LatLng oxford = new LatLng(51.75222, -1.25596);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(oxford));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(oxford,10.0f));
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1200000);
@@ -230,4 +220,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    private void addItems() {
+
+        for (int i = 0; i < MainActivity.crimes.size(); i++) {
+            Crime crime = MainActivity.crimes.get(i);
+            MyItem newItem = new MyItem(parseDouble(crime.getLongitude()), parseDouble(crime.getLatitude()), "Title " + i, "Snippet " + i, crime.getCrimeType());
+            mclusterManager.addItem(newItem);
+        }
+
+    }
 }
