@@ -3,6 +3,7 @@ package project.crimewatch.ui.map;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +52,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import project.crimewatch.Crime;
 import project.crimewatch.MainActivity;
@@ -76,6 +79,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private Boolean mLocationsPermissionGranted = false;
     GoogleMap mMap;
     private ClusterManager<MyItem> mclusterManager;
+    Address addressTemp;
 
     SupportMapFragment mapFragment;
 
@@ -104,6 +108,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return root;
     }
 
+
     private void init(){
         Log.d(TAG, "init: initalising");
 
@@ -115,8 +120,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) { //this allows enter to be used rather than submit button
 
+                    InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
+
                     //begin search
                     geoLocate();
+                    MainActivity.tempLat = "" + addressTemp.getLatitude();
+                    MainActivity.tempLong = "" + addressTemp.getLongitude();
+                    nonOxCrimes();
+                    //GeolocateMap.execute().geoLocate();
 
                 }
                 return false;
@@ -142,13 +154,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             Log.d(TAG, "geoLocate: found a location" + address.toString());
 
             moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));
+            addressTemp = list.get(0);
+
         }
+        else{Log.d(TAG, "geoLocate: could not find a location matching '" + mSearchText.getText().toString() + "'");}
     }
 
     private void moveCamera(LatLng latLng, float zoom, String title){
         Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 
+        //marker dropped everytime for demonstration, remove this if you just want functionality
+        //of geolocate without extra markers
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(title);
@@ -294,4 +311,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
     }
+    public void nonOxCrimes()
+    {
+        // Clear the map and list ready for new pins
+        mMap.clear();
+        MainActivity.tempList.clear();
+
+        try {
+            new tempGetAPIData().execute().get();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < 30; i++) {
+            Crime crime = MainActivity.tempList.get(i);
+            LatLng activity = new LatLng(parseDouble(crime.getLatitude()), parseDouble(crime.getLongitude()));
+            MarkerOptions markersOptions = new MarkerOptions();
+            markersOptions.position(activity);
+            markersOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+            markersOptions.title(crime.getUID() + ": " + crime.getCrimeType());
+            markersOptions.snippet("Crime level: 5");
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(activity));
+            mMap.animateCamera(CameraUpdateFactory.newLatLng(activity));
+            mMap.addMarker(markersOptions);
+
+            Toast.makeText(getContext(), MainActivity.tempList.get(i).toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
