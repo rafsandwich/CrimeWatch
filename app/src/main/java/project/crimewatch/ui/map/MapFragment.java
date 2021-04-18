@@ -38,6 +38,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,10 +54,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import project.crimewatch.Crime;
 import project.crimewatch.MainActivity;
 import project.crimewatch.R;
+
 
 import static java.lang.Double.parseDouble;
 
@@ -124,52 +127,41 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
 
                     //begin search
-                    geoLocate();
-                    MainActivity.tempLat = "" + addressTemp.getLatitude();
-                    MainActivity.tempLong = "" + addressTemp.getLongitude();
-                    nonOxCrimes();
-                    //GeolocateMap.execute().geoLocate();
+                    try {
+                        addressTemp = new GeoLocate().execute(mSearchText, getActivity(), mMap, addressTemp).get();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
+
+                    if(addressTemp != null)
+                    {
+                        MainActivity.tempLat = "" + addressTemp.getLatitude();
+                        MainActivity.tempLong = "" + addressTemp.getLongitude();
+                        nonOxCrimes();
+                    } else {
+                        //Toast.makeText(getActivity(), "Map problem", Toast.LENGTH_LONG).show();
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(getActivity());
+                        builder1.setMessage("Location not found!!\nPlease enter more specific location details eg. country, postcode etc...");
+                        builder1.setCancelable(true);
+
+                        builder1.setPositiveButton(
+                                "Confirm",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                    }
+                                });
+
+                        AlertDialog alert11 = builder1.create();
+                        alert11.show();
+                    }
                 }
                 return false;
             }
         });
-    }
-
-    private void geoLocate(){
-        Log.d(TAG, "geoLocate: geolocating");
-
-        String searchString = mSearchText.getText().toString();
-
-        Geocoder geocoder = new Geocoder(getActivity()); //MapActivity.this but this isn't an activity!
-        List<Address> list = new ArrayList<>();
-        try {
-            list = geocoder.getFromLocationName(searchString, 1);
-        }catch (IOException e){
-            Log.e(TAG, "geoLocate: IOException: " + e.getMessage() );
-        }
-
-        if(list.size() > 0){
-            Address address = list.get(0);
-            Log.d(TAG, "geoLocate: found a location" + address.toString());
-
-            moveCamera(new LatLng(address.getLatitude(), address.getLongitude()), DEFAULT_ZOOM, address.getAddressLine(0));
-            addressTemp = list.get(0);
-
-        }
-        else{Log.d(TAG, "geoLocate: could not find a location matching '" + mSearchText.getText().toString() + "'");}
-    }
-
-    private void moveCamera(LatLng latLng, float zoom, String title){
-        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
-        //marker dropped everytime for demonstration, remove this if you just want functionality
-        //of geolocate without extra markers
-        MarkerOptions options = new MarkerOptions()
-                .position(latLng)
-                .title(title);
-        mMap.addMarker(options);
     }
 
     @SuppressLint("RestrictedApi")
@@ -262,8 +254,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         })
                         .create()
                         .show();
-
-
+                
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(getActivity(),
@@ -311,10 +302,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
 
     }
+    private void moveCamera(LatLng latLng, float zoom, String title, GoogleMap mMap){
+
+
+        Log.d(TAG, "moveCamera: moving the camera to: lat: " + latLng.latitude + ", lng: " + latLng.longitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        /*
+        //marker dropped everytime for demonstration, remove this if you just want functionality
+        //of geolocate without extra markers
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title(title);
+        mMap.addMarker(options);
+         */
+    }
+
     public void nonOxCrimes()
     {
         // Clear the map and list ready for new pins
         mMap.clear();
+        mclusterManager.clearItems();
+        // Loop though 
         MainActivity.tempList.clear();
 
         try {
@@ -325,20 +334,31 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < MainActivity.tempList.size(); i++) {
             Crime crime = MainActivity.tempList.get(i);
-            LatLng activity = new LatLng(parseDouble(crime.getLatitude()), parseDouble(crime.getLongitude()));
-            MarkerOptions markersOptions = new MarkerOptions();
-            markersOptions.position(activity);
-            markersOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-            markersOptions.title(crime.getUID() + ": " + crime.getCrimeType());
-            markersOptions.snippet("Crime level: 5");
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(activity));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(activity));
-            mMap.addMarker(markersOptions);
 
-            Toast.makeText(getContext(), MainActivity.tempList.get(i).toString(), Toast.LENGTH_SHORT).show();
+            MyItem crimeItem = new MyItem(parseDouble(crime.getLatitude()), parseDouble(crime.getLongitude()), Integer.toString(crime.getUID()), crime.getDate(), crime.getCrimeType());
+            mclusterManager.addItem(crimeItem);
+
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(crimeItem.getPosition(), 11), new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    mMap.animateCamera(CameraUpdateFactory.zoomIn());
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
         }
+
     }
+
 
 }

@@ -18,37 +18,39 @@ public class MarkerClusterRenderer extends DefaultClusterRenderer<MyItem> {
     @Override
     protected void onBeforeClusterItemRendered(MyItem item, MarkerOptions markerOptions) {
             String type = item.getType();
+            type = type.toLowerCase().replace("-", " ");
+
             switch (type) {
-                case "Public order":
+                case "public order":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.public_order));
                     break;
-                case "Vehicle crime":
+                case "vehicle crime":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.car_theft));
                     break;
-                case "Criminal damage and arson":
+                case "criminal damage and arson":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.arson));
                     break;
-                case "Violence and sexual offences":
+                case "violence and sexual offences":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.violence));
                     break;
-                case "Burglary":
-                case "Theft from the person":
-                case "Other theft":
+                case "burglary":
+                case "theft from the person":
+                case "other theft":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.theft));
                     break;
-                case "Robbery":
-                case "Shoplifting":
+                case "robbery":
+                case "shoplifting":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.robbery));
-                case "Drugs":
+                case "drugs":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.drugs));
                     break;
-                case "Bicycle theft":
+                case "bicycle theft":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.bike_theft));
                     break;
-                case "Possession of weapons":
+                case "possession of weapons":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.possession));
                     break;
-                case "Anti-social behaviour":
+                case "anti social behaviour":
                     markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.anti_social));
                     break;
                 default:
