@@ -115,7 +115,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void init(){
         Log.d(TAG, "init: initalising");
 
+        this.mSearchText.setOnClickListener(viewOnClick -> this.mSearchText.setCursorVisible(true));
+
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_SEARCH
@@ -123,6 +126,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         || keyEvent.getAction() == KeyEvent.ACTION_DOWN
                         || keyEvent.getAction() == KeyEvent.KEYCODE_ENTER) { //this allows enter to be used rather than submit button
 
+                    mSearchText.setCursorVisible(false);
                     InputMethodManager imm = (InputMethodManager)textView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(textView.getWindowToken(), 0);
 

@@ -58,6 +58,8 @@
             android:imeOptions="actionSearch"
             android:textColor="#000"
             android:textSize="18sp"
+            android:cursorVisible="false"
+            android:inputType="text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toRightOf="@id/ic_magnify"
